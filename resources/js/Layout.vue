@@ -1,0 +1,264 @@
+<template>
+  <div class="layout">
+    <header class="topbar">
+      <div class="bar">
+        <Link href="/" class="brand" aria-label="Goravel Inertia — home">
+          <Logo :size="44" />
+          <h3>Goravel Inertia</h3>
+        </Link>
+
+        <nav>
+          <Link href="/" :class="{ active: isActive('/', true) }">Home</Link>
+          <Link href="/targets" :class="{ active: isActive('/targets', true) }">Create Target</Link>
+          <Link href="/feed" :class="{ active: isActive('/feed') }">Feed</Link>
+          <Link href="/contact" :class="{ active: isActive('/contact') }">Contact</Link>
+          <Link href="/about" :class="{ active: isActive('/about') }">About</Link>
+          <a
+            class="gh"
+            href="https://github.com/goravel/inertia"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Star goravel-inertia on GitHub"
+            title="Star on GitHub"
+          >
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            <span>Star</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <transition name="flash">
+          <div v-if="flash.success" class="flash flash-success">{{ flash.success }}</div>
+        </transition>
+        <transition name="flash">
+          <div v-if="flash.error" class="flash flash-error">{{ flash.error }}</div>
+        </transition>
+        <slot />
+      </div>
+    </main>
+
+    <footer>
+      <div class="container foot">
+        <span>Goravel + Inertia.js + Vue 3</span>
+        <span class="muted">{{ timestamp }}</span>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Link, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import Logo from './components/Logo.vue'
+
+const page = usePage()
+
+const timestamp = computed(() => page.props.timestamp)
+const flash = computed(() => page.props.flash ?? {})
+
+const isActive = (href: string, exact = false) =>
+  exact ? page.url === href : page.url.startsWith(href)
+</script>
+
+<style>
+:root {
+  --go: #00add8;
+  --inertia: #8b5cf6;
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --bg: #f6f8fc;
+  --card: #ffffff;
+  --border: #e6e9f0;
+  --ring: rgba(0, 173, 216, 0.35);
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: inherit;
+}
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  width: 100%;
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.bar {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+.brand-text {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+.brand-text strong {
+  font-weight: 800;
+}
+.brand-accent {
+  color: var(--inertia);
+  font-weight: 700;
+}
+nav {
+  display: flex;
+  gap: 0.25rem;
+}
+nav a {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+nav a:hover {
+  color: var(--ink);
+  background: #eef1f7;
+}
+nav a.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--go), var(--inertia));
+}
+nav a.gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.4rem;
+  color: var(--ink);
+  background: #eef1f7;
+  font-weight: 600;
+}
+nav a.gh:hover {
+  color: #fff;
+  background: var(--ink);
+}
+
+/* main */
+main {
+  flex: 1;
+  padding: 2.5rem 0 3rem;
+}
+
+/* flash */
+.flash {
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.flash-success {
+  background: #e7f7ee;
+  color: #11774b;
+  border: 1px solid #b6e6cd;
+}
+.flash-error {
+  background: #fdecec;
+  color: #b02a2a;
+  border: 1px solid #f3c4c4;
+}
+.flash-enter-active,
+.flash-leave-active {
+  transition: all 0.25s ease;
+}
+.flash-enter-from,
+.flash-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* footer */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.25rem 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.foot {
+  display: flex;
+  justify-content: space-between;
+}
+.muted {
+  color: #9aa1ad;
+}
+
+/* shared building blocks for pages */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--go), var(--inertia));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.3rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.05s;
+}
+.btn:hover {
+  opacity: 0.92;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.lead {
+  color: var(--muted);
+  margin-top: 0.4rem;
+}
+</style>

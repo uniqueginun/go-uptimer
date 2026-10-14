@@ -1,0 +1,43 @@
+package routes
+
+import (
+	"github.com/goravel/framework/contracts/route"
+	"github.com/goravel/framework/facades"
+	sessionmiddleware "github.com/goravel/framework/session/middleware"
+
+	"uptimer/app/http/controllers"
+	appmiddleware "uptimer/app/http/middleware"
+)
+
+func Web() {
+	// Static assets (no session needed).
+	facades.Route().Static("public", "./public")
+	facades.Route().Static("build", "./public/build")
+
+	// Inertia is session-based and web-only — scope it to a web route group so it
+	// never touches API routes. StartSession runs first; HandleInertiaRequests carries
+	// the Inertia protocol and your shared props (edit app/http/middleware/
+	// handle_inertia_requests.go to change shared props).
+	facades.Route().Middleware(
+		sessionmiddleware.StartSession(),
+		appmiddleware.HandleInertiaRequests(),
+	).Group(func(router route.Router) {
+		homeController := controllers.NewHomeController()
+		router.Get("/", homeController.Index)
+
+		feedController := controllers.NewFeedController()
+		router.Get("/feed", feedController.Index)
+
+		contactController := controllers.NewContactController()
+		router.Get("/contact", contactController.Index)
+		router.Post("/contact", contactController.Store)
+
+		aboutController := controllers.NewAboutController()
+		router.Get("/about", aboutController.Index)
+
+		targetsController := controllers.NewTargetsController()
+		router.Get("/targets", targetsController.Create)
+		router.Post("/targets", targetsController.Store)
+		router.Post("/targets/{id}/delete", targetsController.Destroy)
+	})
+}
